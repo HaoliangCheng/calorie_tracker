@@ -5,37 +5,48 @@ import json
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db' 
-app.config['SQLALCHEMY_BINDS'] = {'chat': 'sqlite:///chat.db'} 
+app.config['SQLALCHEMY_BINDS'] = {'dairy': 'sqlite:///dairy.db'} 
 db=SQLAlchemy(app)
 
 class User(db.Model):
     id =db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(200),unique=True,nullable=False)
     passward = db.Column(db.String(200),nullable=False)
-    email = db.Column(db.String(200),unique=True,nullable=False)
+    age = db.Column(db.Integer,nullable=False)
+    height = db.Column(db.Integer,nullable=False)
+    weight = db.Column(db.Integer,nullable=False)
+    goal_weight = db.Column(db.Integer,nullable=False)
+    gender = db.Column(db.String(200),nullable=False)
+    daily_caloire_goal = db.Column(db.Integer,nullable=False)
 
-    def __init__(self,username,passward,email):
+    def __init__(self,username,passward,age,height,weight,goal_weight,gender,daily_caloire_goal):
         self.username=username
         self.passward=passward
-        self.email=email
+        self.age=age
+        self.height=height
+        self.weight=weight
+        self.goal_weight=goal_weight
+        self.gender=gender
+        self.daily_caloire_goal=daily_caloire_goal
 
-class Chat(db.Model): 
-    __bind_key__ = 'chat' 
+class dairy(db.Model): 
+    __bind_key__ = 'dairy' 
     id =db.Column(db.Integer, primary_key=True)
-    chatuser = db.Column(db.String(200),nullable=False)
-    chatcontent = db.Column(db.String(200),nullable=False)
-    datatime = db.Column(db.DateTime, default=datetime.utcnow)
+    user = db.Column(db.String(200),nullable=False)
+    calorie = db.Column(db.String(200),nullable=False)
+    date = db.Column(db.String(200),nullable=False)
 
-    def __init__(self,chatuser,chatcontent):
-        self.chatuser=chatuser
-        self.chatcontent=chatcontent
+    def __init__(self,user,calorie,date):
+        self.user=user
+        self.calorie=calorie
+        self.date=date
 
     def serialize(self):
        return {
            'id' : self.id,
-           'username' : self.chatuser,
-           'message'  : self.chatcontent,
-           'datatime' : self.datatime
+           'username' : self.user,
+           'calorie'  : self.calorie,
+           'date': self.date
        }
 
 
@@ -63,16 +74,26 @@ def register_controller():
     if(request.method=="GET"):
         return render_template("registerPage.html")
     else:
-        user1 = User.query.filter_by(email=request.form['email']).first()
-        user2 = User.query.filter_by(username=request.form['user']).first()
+        user1 = User.query.filter_by(username=request.form['user']).first()
 
-        if user1 or user2:
+        if user1:
             return render_template("registerPage.html")
         elif request.form['Password']==request.form['RePassword']:
             Useranme =request.form['user']
-            Email =request.form['email']
+            age=request.form['age']
+            gender=request.form['gender']
+            height=request.form['height']
+            weight=request.form['weight']
+            goal_weight=request.form['goal_weight']
+            daily_caloire_goal=request.form['daily_caloire_goal']
             Passward =request.form['Password']
-            newUser= User(username=Useranme,email=Email,passward=Passward)
+            newUser= User(username=Useranme,
+                          age=age,height=height,
+                          weight=weight,
+                          goal_weight=goal_weight,
+                          gender=gender,
+                          daily_caloire_goal=daily_caloire_goal,
+                          passward=Passward)
             try:
                db.session.add(newUser)
                db.session.commit()
@@ -85,30 +106,14 @@ def register_controller():
 @app.route("/profile/<username>") 
 def profile(username=None): 
     if request.method == "POST":
-        return render_template("chatPage.html", username=username)
+        return render_template("caloriePage.html", username=username)
     else:
-        return render_template("chatPage.html", username=username)
+        return render_template("caloriePage.html", username=username)
  
 @app.route("/logout/") 
 def unlogger(): 
      return render_template("logoutPage.html")
     
-@app.route("/new_message/", methods=["POST"]) 
-def new_message(): 
-    Username =request.form['username']
-    message =request.form['message']
-    newmessage= Chat(chatuser=Username,chatcontent=message)
-    try:
-        db.session.add(newmessage)
-        db.session.commit()
-    except:
-        return 'There was an issue adding your task'
-    
-@app.route("/messages/") 
-def messages(): 
-    allmessages = Chat.query.order_by(Chat.datatime).all()
-    list_serialized = [message.serialize() for message in allmessages]
-    return jsonify(list_serialized)
 
     
 if __name__=="__main__":
