@@ -5,11 +5,11 @@ import json
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db' 
-app.config['SQLALCHEMY_BINDS'] = {'dairy': 'sqlite:///dairy.db'} 
+app.config['SQLALCHEMY_BINDS'] = {'diary': 'sqlite:///diary.db'} 
 db=SQLAlchemy(app)
 
 class User(db.Model):
-    id =db.Column(db.Integer, primary_key=True)
+    id =db.Column(db.Integer, primary_key=True, unique = True, nullable = False)
     username = db.Column(db.String(200),unique=True,nullable=False)
     passward = db.Column(db.String(200),nullable=False)
     age = db.Column(db.Integer,nullable=False)
@@ -29,8 +29,8 @@ class User(db.Model):
         self.gender=gender
         self.daily_caloire_goal=daily_caloire_goal
 
-class dairy(db.Model): 
-    __bind_key__ = 'dairy' 
+class diary(db.Model): 
+    __bind_key__ = 'diary' 
     id =db.Column(db.Integer, primary_key=True)
     user = db.Column(db.String(200),nullable=False)
     calorie = db.Column(db.String(200),nullable=False)
