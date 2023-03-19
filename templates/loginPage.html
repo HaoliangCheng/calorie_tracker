@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <title>login page</title>
+{% endblock %}
+
+{% block body %}
+
+    <p>Log In! -  calorie tracker web</p> 
+    <form action="" method="post">
+        Username:  <input type="text" name="user_name" /><br/>
+        Password:  <input type="text" name="user_password" /><br/>
+        <input class="Sign" type="submit" value="Sign in" id="Sign"> 
+        <a href="/register" class="register">register</a>
+    </form>
+
+{% endblock %}
