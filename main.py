@@ -5,7 +5,6 @@ import json
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db' 
-app.config['SQLALCHEMY_BINDS'] = {'diary': 'sqlite:///diary.db'} 
 db=SQLAlchemy(app)
 
 class User(db.Model):
@@ -29,8 +28,10 @@ class User(db.Model):
         self.gender=gender
         self.daily_caloire_goal=daily_caloire_goal
 
+    def __repr__(self): #for debugging
+        return '<Name %r>' % self.username
 class diary(db.Model): 
-    __bind_key__ = 'diary' 
+#    __bind_key__ = 'diary' 
     id =db.Column(db.Integer, primary_key=True)
     user = db.Column(db.String(200),nullable=False)
     calorie = db.Column(db.String(200),nullable=False)
@@ -48,7 +49,6 @@ class diary(db.Model):
            'calorie'  : self.calorie,
            'date': self.date
        }
-
 
 with app.app_context():
     db.create_all()
