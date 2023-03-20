@@ -8,6 +8,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 db=SQLAlchemy(app)
 
 class User(db.Model):
+    __tablename__ = 'User'
     id =db.Column(db.Integer, primary_key=True, unique = True, nullable = False)
     username = db.Column(db.String(200),unique=True,nullable=False)
     passward = db.Column(db.String(200),nullable=False)
@@ -49,6 +50,26 @@ class diary(db.Model):
            'calorie'  : self.calorie,
            'date': self.date
        }
+
+class Food(db.Model):
+    __tablename__ = 'Food'
+    id = db.Column(db.Integer, primary_key = True, unique = True, nullable = False)
+    name = db.Column(db.String(200), nullable = False)
+    calories = db.Column(db.Integer, nullable = False)
+    userID = db.Column(db.Integer, db.ForeignKey('User.id'), nullable = False)
+
+    def __repr__(self):
+        return '<Name %r>' % self.name
+
+class Exercise(db.Model):
+    __tablename__ = 'Exercise'
+    id = db.Column(db.Integer, primary_key = True, unique = True, nullable = False)
+    name = db.Column(db.String(200), nullable = False)
+    calories = db.Column(db.Integer, nullable = False)
+    userID = db.Column(db.Integer, db.ForeignKey('User.id'), nullable = False)
+
+    def __repr__(self):
+        return '<Name %r>' % self.name
 
 with app.app_context():
     db.create_all()
