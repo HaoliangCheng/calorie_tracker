@@ -5,11 +5,11 @@ import json
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db' 
-app.config['SQLALCHEMY_BINDS'] = {'dairy': 'sqlite:///dairy.db'} 
 db=SQLAlchemy(app)
 
 class User(db.Model):
-    id =db.Column(db.Integer, primary_key=True)
+    __tablename__ = 'User'
+    id =db.Column(db.Integer, primary_key=True, unique = True, nullable = False)
     username = db.Column(db.String(200),unique=True,nullable=False)
     passward = db.Column(db.String(200),nullable=False)
     age = db.Column(db.Integer,nullable=False)
@@ -18,6 +18,7 @@ class User(db.Model):
     goal_weight = db.Column(db.Integer,nullable=False)
     gender = db.Column(db.String(200),nullable=False)
     daily_caloire_goal = db.Column(db.Integer,nullable=False)
+    date_of_creation = db.Column(db.DateTime, default = datetime.utcnow, nullable = False)
 
     def __init__(self,username,passward,age,height,weight,goal_weight,gender,daily_caloire_goal):
         self.username=username
@@ -29,12 +30,14 @@ class User(db.Model):
         self.gender=gender
         self.daily_caloire_goal=daily_caloire_goal
 
-class dairy(db.Model): 
-    __bind_key__ = 'dairy' 
+    def __repr__(self): #for debugging
+        return '<Name %r>' % self.username
+class diary(db.Model): 
+#    __bind_key__ = 'diary' 
     id =db.Column(db.Integer, primary_key=True)
     user = db.Column(db.String(200),nullable=False)
     calorie = db.Column(db.String(200),nullable=False)
-    date = db.Column(db.String(200),nullable=False)
+    date = db.Column(db.DateTime,nullable=False)
 
     def __init__(self,user,calorie,date):
         self.user=user
@@ -49,6 +52,25 @@ class dairy(db.Model):
            'date': self.date
        }
 
+class Food(db.Model):
+    __tablename__ = 'Food'
+    id = db.Column(db.Integer, primary_key = True, unique = True, nullable = False)
+    name = db.Column(db.String(200), nullable = False)
+    calories = db.Column(db.Integer, nullable = False)
+    userID = db.Column(db.Integer, db.ForeignKey('User.id'), nullable = False)
+
+    def __repr__(self):
+        return '<Name %r>' % self.name
+
+class Exercise(db.Model):
+    __tablename__ = 'Exercise'
+    id = db.Column(db.Integer, primary_key = True, unique = True, nullable = False)
+    name = db.Column(db.String(200), nullable = False)
+    calories = db.Column(db.Integer, nullable = False)
+    userID = db.Column(db.Integer, db.ForeignKey('User.id'), nullable = False)
+
+    def __repr__(self):
+        return '<Name %r>' % self.name
 
 with app.app_context():
     db.create_all()
