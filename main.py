@@ -18,6 +18,7 @@ class User(db.Model):
     goal_weight = db.Column(db.Integer,nullable=False)
     gender = db.Column(db.String(200),nullable=False)
     daily_caloire_goal = db.Column(db.Integer,nullable=False)
+    date_of_creation = db.Column(db.DateTime, default = datetime.utcnow, nullable = False)
 
     def __init__(self,username,passward,age,height,weight,goal_weight,gender,daily_caloire_goal):
         self.username=username
@@ -36,7 +37,7 @@ class diary(db.Model):
     id =db.Column(db.Integer, primary_key=True)
     user = db.Column(db.String(200),nullable=False)
     calorie = db.Column(db.String(200),nullable=False)
-    date = db.Column(db.String(200),nullable=False)
+    date = db.Column(db.DateTime,nullable=False)
 
     def __init__(self,user,calorie,date):
         self.user=user
