@@ -34,6 +34,7 @@ class User(db.Model):
         return '<Name %r>' % self.username
 class diary(db.Model): 
 #    __bind_key__ = 'diary' 
+    __tablename__ = 'Diary'
     id =db.Column(db.Integer, primary_key=True)
     user = db.Column(db.String(200),nullable=False)
     calorie = db.Column(db.String(200),nullable=False)
@@ -127,11 +128,20 @@ def register_controller():
             
 @app.route("/profile/<username>") 
 def profile(username=None): 
+    
     if request.method == "POST":
         return render_template("caloriePage.html", username=username)
     else:
         return render_template("caloriePage.html", username=username)
  
+@app.route('/getdiarydata')
+def get_diary_data():
+    diaries = Diary.query.filter_by(user=username).all()
+    diary_data = {}
+    for diary in diaries:
+        diary_data.update({diary.date : diary.calories})
+    return json.dumps(diary_data)
+
 @app.route("/logout/") 
 def unlogger(): 
      return render_template("logoutPage.html")
