@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <script src="{{ url_for('static', filename='js/main-javascript.js') }}"></script>
+    <title>chat page</title>
+{% endblock %}
+
+{% block body %}
+<!-- <div>
+    Your profile! - Chat App Logged in as {{username}},
+    <a href="/logout" class="logout"> click here to log out!</a>
+    <p id="Username">Username:{{username}}</p>
+    <input type="hidden" value={{ username }} id="username">
+    <p>Type your message here</p>   
+    <textarea class="sendmessage" id="sendmessage" name="sendmessage" rows="8" cols="50"></textarea>
+    <br>
+    <input class="send" type="submit" value="send" id="send">
+    <br/><br/><br/>
+    <textarea class="chat_window" id="chat_window" name="chat_window" rows="20" cols="50"></textarea>
+    <br/><br/><br/>
+</div> -->
+{% endblock %}
