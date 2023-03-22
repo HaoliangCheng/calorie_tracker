@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <script src="{{ url_for('static', filename='js/main-javascript.js') }}"></script>
+    <title>chat page</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+{% endblock %}
+
+{% block body %}
+<div>
+    Your profile! - Logged in as {{username}},
+    <a href="/logout" class="logout"> click here to log out!</a>
+    <p id="Username">Username:{{username}}</p>
+    <input type="hidden" value={{ username }} id="username">
+    <a href="/add" class="add"> click here to input calories out</a>
+
+</div>
+<div id="caloriePlot"></div>
+</div>
+<div id="caloriePlot"></div>
+</div>
+<script>
+    //inital plot
+    object.addEventListener("load", populateData);
+    const populateData = () => {
+        var data = []
+
+        $.get("/getpythondata", function (data) {
+            console.log($.parseJSON(data))
+        })
+        return data;
+    } 
+    
+    var calorieData = populateData();
+    // Define Layout
+    var calorieLayout = {
+        xaxis: { title: "Date" },
+        yaxis: { title: "Calories" },
+        title: "Calorie Graph"
+    };
+    Plotly.newPlot("caloriePlot", calorieData, calorieLayout);
+
+</script>
+{% endblock %}
