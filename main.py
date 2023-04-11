@@ -3,6 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import json
 
+from sqlalchemy import or_
+
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db' 
 db=SQLAlchemy(app)
@@ -18,6 +21,7 @@ class User(db.Model):
     goal_weight = db.Column(db.Integer,nullable=False)
     gender = db.Column(db.String(200),nullable=False)
     daily_caloire_goal = db.Column(db.Integer,nullable=False)
+    date_of_creation = db.Column(db.String(200), default = datetime.utcnow().strftime('%Y-%m-%d'), nullable = False)
 
     def __init__(self,username,passward,age,height,weight,goal_weight,gender,daily_caloire_goal):
         self.username=username
@@ -37,7 +41,7 @@ class diary(db.Model):
     id =db.Column(db.Integer, primary_key=True)
     user = db.Column(db.String(200),nullable=False)
     calorie = db.Column(db.String(200),nullable=False)
-    date = db.Column(db.DateTime,nullable=False)
+    date = db.Column(db.String(200),nullable=False)
 
     def __init__(self,user,calorie,date):
         self.user=user
@@ -71,6 +75,7 @@ class Exercise(db.Model):
 
     def __repr__(self):
         return '<Name %r>' % self.name
+
 
 with app.app_context():
     db.create_all()
@@ -125,7 +130,7 @@ def register_controller():
         else:
             return render_template("registerPage.html")
             
-@app.route("/profile/<username>") 
+@app.route("/<username>/profile") 
 def profile(username=None): 
     
     if request.method == "POST":
@@ -134,8 +139,8 @@ def profile(username=None):
         return render_template("caloriePage.html", username=username)
  
 @app.route('/getdiarydata')
-def get_diary_data():
-    diaries = Diary.query.filter_by(user=username).all()
+def get_diary_data(username=None):
+    diaries = diary.query.filter_by(user=username).all()
     diary_data = {}
     for diary in diaries:
         diary_data.update({diary.date : diary.calories})
@@ -144,8 +149,41 @@ def get_diary_data():
 @app.route("/logout/") 
 def unlogger(): 
      return render_template("logoutPage.html")
-    
 
+@app.route("/<username>/add_record/", methods=["GET", "POST"])
+def add_record(username=None):
+    user = User.query.filter_by(username=username).first()
+    food_list = db.session.execute(db.select([Food.name]).where(or_(Food.userID == user.id, Food.userID == 0))).scalars().all()
+    if request.method == "GET":
+        return render_template("add_record.html", username=username, food_list=food_list)
+    else:
+        flag = 0
+        date = request.form['date']
+        food_l_ent = request.form['food_list']
+        food = request.form['food']
+        calorie0 = request.form['calories']
+        amount = request.form['amount']
+
+        if food == "":
+            flag = 1
+            food = food_l_ent
+            calorie0 = db.session.execute(db.select([Food.calories]).where(Food.name == food)).scalars().first()
+
+        calorie1 = str(int(calorie0) * int(amount))
+
+        if flag == 0:
+            diary_entry = diary(user=username, calorie=calorie1, date=date)
+            food_entry = Food(name=food, calories=calorie0, userID=user.id)
+        else:
+            diary_entry = diary(user=username, calorie=calorie1, date=date)
+        try:
+            if flag == 0:
+                db.session.add(food_entry)
+            db.session.add(diary_entry)
+            db.session.commit()
+            return redirect(url_for('profile', username=username))
+        except:
+            return 'There was an issue adding your task'
     
 if __name__=="__main__":
   app.run(threaded=True)
