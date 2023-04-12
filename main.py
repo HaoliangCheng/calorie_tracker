@@ -154,6 +154,9 @@ def unlogger():
 def add_record(username=None):
     user = User.query.filter_by(username=username).first()
     food_list = db.session.execute(db.select([Food.name]).where(or_(Food.userID == user.id, Food.userID == 0))).scalars().all()
+    calorie_list = db.session.execute(db.select([Food.calories]).where(or_(Food.userID == user.id, Food.userID == 0))).scalars().all()
+    for i in range(len(food_list)):
+        food_list[i] = food_list[i] + " (" + str(calorie_list[i]) + " calories)"
     if request.method == "GET":
         return render_template("add_record.html", username=username, food_list=food_list)
     else:
@@ -164,9 +167,9 @@ def add_record(username=None):
         calorie0 = request.form['calories']
         amount = request.form['amount']
 
-        if food == "":
+        if food == '':
             flag = 1
-            food = food_l_ent
+            food = food_l_ent.split(" ")[0]
             calorie0 = db.session.execute(db.select([Food.calories]).where(Food.name == food)).scalars().first()
 
         calorie1 = str(int(calorie0) * int(amount))
@@ -185,5 +188,43 @@ def add_record(username=None):
         except:
             return 'There was an issue adding your task'
     
+@app.route("/<username>/sub_record/", methods=["GET", "POST"])
+def sub_record(username=None):
+    user = User.query.filter_by(username=username).first()
+    exercise_list = db.session.execute(db.select([Exercise.name]).where(or_(Exercise.userID == user.id, Exercise.userID == 0))).scalars().all()
+    calorie_list = db.session.execute(db.select([Exercise.calories]).where(or_(Exercise.userID == user.id, Exercise.userID == 0))).scalars().all()
+    for i in range(len(exercise_list)):
+        exercise_list[i] = exercise_list[i] + " (" + str(calorie_list[i]) + " calories)"
+    if request.method == "GET":
+        return render_template("sub_record.html", username=username, exercise_list = exercise_list)
+    else:
+        flag = 0
+        date = request.form['date']
+        exercise_l_ent = request.form['exercise_list']
+        exercise = request.form['exercise']
+        calorie0 = request.form['calories']
+        amount = request.form['amount']
+
+        if exercise == "":
+            flag = 1
+            exercise = exercise_l_ent.split(" ")[0]
+            calorie0 = db.session.execute(db.select([Exercise.calories]).where(Exercise.name == exercise)).scalars().first()
+
+        calorie1 = str(int(calorie0) * int(amount))
+
+        if flag == 0:
+            diary_entry = diary(user=username, calorie=calorie1, date=date)
+            exercise_entry = Exercise(name=exercise, calories=calorie0, userID=user.id)
+        else:
+            diary_entry = diary(user=username, calorie=calorie1, date=date)
+        try:
+            if flag == 0:
+                db.session.add(exercise_entry)
+            db.session.add(diary_entry)
+            db.session.commit()
+            return redirect(url_for('profile', username=username))
+        except:
+            return 'There was an issue adding your task'
+        
 if __name__=="__main__":
   app.run(threaded=True)
