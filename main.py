@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import json
 
-from sqlalchemy import or_
+from sqlalchemy import and_, or_
 
 
 app = Flask(__name__)
@@ -35,18 +35,13 @@ class User(db.Model):
 
     def __repr__(self): #for debugging
         return '<Name %r>' % self.username
+    
 class diary(db.Model): 
-#    __bind_key__ = 'diary' 
     __tablename__ = 'Diary'
     id =db.Column(db.Integer, primary_key=True)
     user = db.Column(db.String(200),nullable=False)
     calorie = db.Column(db.String(200),nullable=False)
     date = db.Column(db.String(200),nullable=False)
-
-    def __init__(self,user,calorie,date):
-        self.user=user
-        self.calorie=calorie
-        self.date=date
 
     def serialize(self):
        return {
@@ -55,6 +50,9 @@ class diary(db.Model):
            'calorie'  : self.calorie,
            'date': self.date
        }
+    
+    def __repr__(self):
+        return '<Name %r>' % self.user
 
 class Food(db.Model):
     __tablename__ = 'Food'
@@ -225,6 +223,21 @@ def sub_record(username=None):
             return redirect(url_for('profile', username=username))
         except:
             return 'There was an issue adding your task'
+        
+@app.route("/<username>/diary/", methods=["GET"])
+def diary_entry(username=None):
+    user = User.query.filter_by(username=username).first()
+    diary_list = db.session.execute(db.select([diary.date]).where(diary.user == username)).scalars().all()
+    calorie_list = []
+    for i in range(len(diary_list)):
+        calorie_entry = db.session.execute(db.select([diary.calorie]).where(diary.date == diary_list[i], diary.user == user.username)).scalars().all()
+        calorie_sum = 0
+        for j in range(len(calorie_entry)):
+            calorie_sum += int(calorie_entry[j])
+        calorie_list.append((calorie_sum, diary_list[i]))
+    
+    return render_template("diary.html", username=username, records=calorie_list)
+        
         
 if __name__=="__main__":
   app.run(threaded=True)
