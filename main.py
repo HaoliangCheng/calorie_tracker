@@ -228,6 +228,7 @@ def sub_record(username=None):
 def diary_entry(username=None):
     user = User.query.filter_by(username=username).first()
     diary_list = db.session.execute(db.select([diary.date]).where(diary.user == username)).scalars().all()
+    diary_list = list(set(diary_list))
     calorie_list = []
     for i in range(len(diary_list)):
         calorie_entry = db.session.execute(db.select([diary.calorie]).where(diary.date == diary_list[i], diary.user == user.username)).scalars().all()
