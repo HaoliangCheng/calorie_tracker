@@ -170,7 +170,7 @@ def add_record(username=None):
             food = food_l_ent.split(" ")[0]
             calorie0 = db.session.execute(db.select([Food.calories]).where(Food.name == food)).scalars().first()
 
-        calorie1 = str(int(calorie0) * int(amount) / 100)
+        calorie1 = str(float(calorie0) * float(amount) / 100)
 
         if flag == 0:
             diary_entry = diary(user=username, calorie=calorie1, date=date)
@@ -208,7 +208,7 @@ def sub_record(username=None):
             exercise = exercise_l_ent.split(" ")[0]
             calorie0 = db.session.execute(db.select([Exercise.calories]).where(Exercise.name == exercise)).scalars().first()
 
-        calorie1 = str(int(calorie0) * int(amount))
+        calorie1 = str(float(calorie0) * float(amount))
 
         if flag == 0:
             diary_entry = diary(user=username, calorie=calorie1, date=date)
@@ -234,7 +234,7 @@ def diary_entry(username=None):
         calorie_entry = db.session.execute(db.select([diary.calorie]).where(diary.date == diary_list[i], diary.user == user.username)).scalars().all()
         calorie_sum = 0
         for j in range(len(calorie_entry)):
-            calorie_sum += int(calorie_entry[j])
+            calorie_sum += float(calorie_entry[j])
         calorie_list.append((calorie_sum, diary_list[i]))
     
     return render_template("diary.html", username=username, records=calorie_list)
