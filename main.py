@@ -165,12 +165,12 @@ def add_record(username=None):
         calorie0 = request.form['calories']
         amount = request.form['amount']
 
-        if food == '':
+        if food_l_ent != "0":
             flag = 1
             food = food_l_ent.split(" ")[0]
             calorie0 = db.session.execute(db.select([Food.calories]).where(Food.name == food)).scalars().first()
 
-        calorie1 = str(int(calorie0) * int(amount))
+        calorie1 = str(int(calorie0) * int(amount) / 100)
 
         if flag == 0:
             diary_entry = diary(user=username, calorie=calorie1, date=date)
@@ -203,7 +203,7 @@ def sub_record(username=None):
         calorie0 = request.form['calories']
         amount = request.form['amount']
 
-        if exercise == "":
+        if exercise_l_ent != "0":
             flag = 1
             exercise = exercise_l_ent.split(" ")[0]
             calorie0 = db.session.execute(db.select([Exercise.calories]).where(Exercise.name == exercise)).scalars().first()
