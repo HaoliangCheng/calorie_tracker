@@ -150,31 +150,31 @@ def unlogger():
 
 @app.route("/<username>/add_record/", methods=["GET", "POST"])
 def add_record(username=None):
-    user = User.query.filter_by(username=username).first()
-    food_list = db.session.execute(db.select([Food.name]).where(or_(Food.userID == user.id, Food.userID == 0))).scalars().all()
-    calorie_list = db.session.execute(db.select([Food.calories]).where(or_(Food.userID == user.id, Food.userID == 0))).scalars().all()
+    user = User.query.filter_by(username=username).first() # get user
+    food_list = db.session.execute(db.select([Food.name]).where(or_(Food.userID == user.id, Food.userID == 0))).scalars().all() # get food list
+    calorie_list = db.session.execute(db.select([Food.calories]).where(or_(Food.userID == user.id, Food.userID == 0))).scalars().all() # get calorie list
     for i in range(len(food_list)):
-        food_list[i] = food_list[i] + " (" + str(calorie_list[i]) + " calories)"
+        food_list[i] = food_list[i] + " (" + str(calorie_list[i]) + " calories)" # combine food and calorie
     if request.method == "GET":
         return render_template("add_record.html", username=username, food_list=food_list)
     else:
-        flag = 0
+        flag = 0 # flag to check if food is in the list
         date = request.form['date']
-        food_l_ent = request.form['food_list']
-        food = request.form['food']
+        food_l_ent = request.form['food_list'] # food list entry
+        food = request.form['food'] # food entry
         calorie0 = request.form['calories']
         amount = request.form['amount']
 
-        if food_l_ent != "0":
-            flag = 1
-            food = food_l_ent.split(" ")[0]
-            calorie0 = db.session.execute(db.select([Food.calories]).where(Food.name == food)).scalars().first()
+        if food_l_ent != "0": # if dropdown is selected
+            flag = 1 # set flag to 1
+            food = food_l_ent.split(" ")[0] # get food name
+            calorie0 = db.session.execute(db.select([Food.calories]).where(Food.name == food)).scalars().first() # get calorie
 
-        calorie1 = str(float(calorie0) * float(amount) / 100)
+        calorie1 = str(float(calorie0) * float(amount) / 100) # calculate calorie
 
         if flag == 0:
             diary_entry = diary(user=username, calorie=calorie1, date=date)
-            food_entry = Food(name=food, calories=calorie0, userID=user.id)
+            food_entry = Food(name=food, calories=calorie0, userID=user.id) # add food to the database
         else:
             diary_entry = diary(user=username, calorie=calorie1, date=date)
         try:
@@ -188,32 +188,32 @@ def add_record(username=None):
     
 @app.route("/<username>/sub_record/", methods=["GET", "POST"])
 def sub_record(username=None):
-    user = User.query.filter_by(username=username).first()
-    exercise_list = db.session.execute(db.select([Exercise.name]).where(or_(Exercise.userID == user.id, Exercise.userID == 0))).scalars().all()
-    calorie_list = db.session.execute(db.select([Exercise.calories]).where(or_(Exercise.userID == user.id, Exercise.userID == 0))).scalars().all()
+    user = User.query.filter_by(username=username).first() #get user from the database
+    exercise_list = db.session.execute(db.select([Exercise.name]).where(or_(Exercise.userID == user.id, Exercise.userID == 0))).scalars().all() #look for exercises by the user and by default
+    calorie_list = db.session.execute(db.select([Exercise.calories]).where(or_(Exercise.userID == user.id, Exercise.userID == 0))).scalars().all() #look for calories associated with these exercises
     for i in range(len(exercise_list)):
-        exercise_list[i] = exercise_list[i] + " (" + str(calorie_list[i]) + " calories)"
+        exercise_list[i] = exercise_list[i] + " (" + str(calorie_list[i]) + " calories)" #join them
     if request.method == "GET":
         return render_template("sub_record.html", username=username, exercise_list = exercise_list)
     else:
-        flag = 0
+        flag = 0 #flag to check if the dropdown menu was used
         date = request.form['date']
         exercise_l_ent = request.form['exercise_list']
         exercise = request.form['exercise']
         calorie0 = request.form['calories']
         amount = request.form['amount']
 
-        if exercise_l_ent != "0":
+        if exercise_l_ent != "0": #if the dropdown menu was used
             flag = 1
-            exercise = exercise_l_ent.split(" ")[0]
+            exercise = exercise_l_ent.split(" ")[0] #get the exercise name
             calorie0 = db.session.execute(db.select([Exercise.calories]).where(Exercise.name == exercise)).scalars().first()
 
         calorie1 = str(float(calorie0) * float(amount))
 
-        if flag == 0:
+        if flag == 0: #if the dropdown menu was not used
             diary_entry = diary(user=username, calorie=calorie1, date=date)
-            exercise_entry = Exercise(name=exercise, calories=calorie0, userID=user.id)
-        else:
+            exercise_entry = Exercise(name=exercise, calories=calorie0, userID=user.id) #add the exercise to the database
+        else: #if the dropdown menu was used
             diary_entry = diary(user=username, calorie=calorie1, date=date)
         try:
             if flag == 0:
@@ -226,16 +226,16 @@ def sub_record(username=None):
         
 @app.route("/<username>/diary/", methods=["GET"])
 def diary_entry(username=None):
-    user = User.query.filter_by(username=username).first()
-    diary_list = db.session.execute(db.select([diary.date]).where(diary.user == username)).scalars().all()
-    diary_list = list(set(diary_list))
-    calorie_list = []
-    for i in range(len(diary_list)):
-        calorie_entry = db.session.execute(db.select([diary.calorie]).where(diary.date == diary_list[i], diary.user == user.username)).scalars().all()
-        calorie_sum = 0
-        for j in range(len(calorie_entry)):
-            calorie_sum += float(calorie_entry[j])
-        calorie_list.append((calorie_sum, diary_list[i]))
+    user = User.query.filter_by(username=username).first() #get user from the database
+    diary_list = db.session.execute(db.select([diary.date]).where(diary.user == username)).scalars().all() #get all the dates when the user has made an entry, username are unique
+    diary_list = list(set(diary_list)) #remove duplicates
+    calorie_list = [] #list of tuples (calories, date)
+    for i in range(len(diary_list)): #for each date
+        calorie_entry = db.session.execute(db.select([diary.calorie]).where(diary.date == diary_list[i], diary.user == user.username)).scalars().all() #get all the calories for that date
+        calorie_sum = 0 #sum of calories for that date
+        for j in range(len(calorie_entry)): #for each calorie entry
+            calorie_sum += float(calorie_entry[j]) #add it to the sum
+        calorie_list.append((calorie_sum, diary_list[i])) #add the sum and the date to the list
     
     return render_template("diary.html", username=username, records=calorie_list)
         
