@@ -19,10 +19,10 @@
         <br><br>
         <label for="food">Food (if adding new):</label>
         <input type="text" id="food" name="food"><br><br>
-        <label for="calories">Calories:</label>
+        <label for="calories">Calories (per 100g):</label>
         <input type="number" id="calories" name="calories"><br><br>
-        <label for="amount">Amount:</label>
-        <input type="number" id="amount" name="amount"><br><br>
+        <label for="amount">Amount (in grams):</label>
+        <input type="number" id="amount" name="amount" step = "0.001"><br><br>
         <input class="add_record" type="submit" value="Submit" id="add_record">
     </form>
 {% endblock %}
