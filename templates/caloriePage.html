@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block head %}
-    <script src="{{ url_for('static', filename='js/main-javascript.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main-calorie.js') }}"></script>
     <title>chat page</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 {% endblock %}
@@ -12,11 +12,11 @@
     <a href="/logout" class="logout"> click here to log out!</a>
     <p id="Username">Username:{{username}}</p>
     <input type="hidden" value={{ username }} id="username">
-    <a href="/add" class="add"> click here to input calories out</a>
+    <a href='diary',username=username, class="diary"> click here to show your diary record</a> 
+    <button onclick="window.location.href='add_record', username=username">add food</button>
+    <button onclick="window.location.href='sub_record', username=username">add exercise</button>
+</div>
 
-</div>
-<div id="caloriePlot"></div>
-</div>
 <div id="caloriePlot"></div>
 </div>
 <script>
@@ -42,3 +42,4 @@
 
 </script>
 {% endblock %}
+
