@@ -130,9 +130,8 @@ def register_controller():
             
 @app.route("/<username>/profile") 
 def profile(username=None): 
-    
     if request.method == "POST":
-        return render_template("caloriePage.html", username=username)
+        return redirect(url_for('diary', username=useranme))
     else:
         return render_template("caloriePage.html", username=username)
  
@@ -208,8 +207,8 @@ def sub_record(username=None):
             exercise = exercise_l_ent.split(" ")[0] #get the exercise name
             calorie0 = db.session.execute(db.select([Exercise.calories]).where(Exercise.name == exercise)).scalars().first()
 
-        calorie1 = str(float(calorie0) * float(amount))
-
+        calorie1 = str(-(float(calorie0) * float(amount)))
+        print(calorie1)
         if flag == 0: #if the dropdown menu was not used
             diary_entry = diary(user=username, calorie=calorie1, date=date)
             exercise_entry = Exercise(name=exercise, calories=calorie0, userID=user.id) #add the exercise to the database
@@ -235,6 +234,7 @@ def diary_entry(username=None):
         calorie_sum = 0 #sum of calories for that date
         for j in range(len(calorie_entry)): #for each calorie entry
             calorie_sum += float(calorie_entry[j]) #add it to the sum
+        calorie_sum=round(calorie_sum,2)
         calorie_list.append((calorie_sum, diary_list[i])) #add the sum and the date to the list
     
     return render_template("diary.html", username=username, records=calorie_list)
