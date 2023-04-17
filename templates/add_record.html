@@ -2,11 +2,13 @@
 
 {% block head %}
     <title>Add Calorie Page</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='css/add.css')}}">
+
 {% endblock %}
 
 {% block body %}
-    <p>Add Calorie Page</p>
     <form action="" method = "post">
+        <h3>Add Food:</h3>
         <label for="date">Date:</label>
         <input type="date" id="date" name="date" required><br><br>
         <label for="food_list">Food:</label>

@@ -2,11 +2,15 @@
 
 {% block head %}
     <title>logout page</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='css/logout.css')}}">
+
 {% endblock %}
 
 {% block body %}
 <div id="content">
-    <p>Log out! - calorie tracker web</p> 
-    <a href="/login" class="login">Re Login</a>
+    <style></style>
+    <h1>Successfully logged out</h1> 
+    <a href="/login" class="login">Log in again</a>
+       
 </div>
 {% endblock %}

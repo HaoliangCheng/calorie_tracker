@@ -2,26 +2,60 @@
 
 {% block head %}
     <script src="{{ url_for('static', filename='js/main-calorie.js') }}"></script>
-    <title>chat page</title>
+    <title>Profile</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='css/profile.css')}}">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 {% endblock %}
 
 {% block body %}
-<div>
-    Your profile! - Logged in as {{username}},
-    <a href="/logout" class="logout"> click here to log out!</a>
-    <p id="Username">Username:{{username}}</p>
+<div id="title">
+    <h1>Calorie Tracker</h1>
+</div>
+<div id="appDiv">
+    <h2>{{username}}'s Profile:</h2>
+    
+    
+    <!-- <p id="Username">Username:{{username}}</p> -->
     <input type="hidden" value={{ username }} id="username">
-    <a href='diary',username=username, class="diary"> click here to show your diary record</a> 
-    <button onclick="window.location.href='add_record', username=username">add food</button>
-    <button onclick="window.location.href='sub_record', username=username">add exercise</button>
+    <div id="caloriePlot"></div>
+    <br>
+    <button onclick="window.location.href='diary', username=username">Show Diary Record</button>
+    <button onclick="window.location.href='add_record', username=username">Add Food</button>
+    <button onclick="window.location.href='sub_record', username=username">Add Exercise</button>
+    <br>
+    
+    <a href="/logout">
+        <input type="button" value="Logout" />
+    </a>
 </div>
 
-<div id="caloriePlot"></div>
-</div>
+
 <script>
     //inital plot
+    var calorieData = [];
+    // Define Layout
+    var calorieLayout = {
+        xaxis: { title: "Date", 
+                showgrid: false, 
+                rangemode: 'nonnegative',
+                linecolor: '#FFFFFF',
+                linewidth: 1 },
+        yaxis: { title: "Calories", 
+                showgrid: false, 
+                rangemode: 'nonnegative',
+                linecolor: '#FFFFFF',
+                linewidth: 1  },
+        title: "",
+        font: {
+            color: 'white',
+        },
+        paper_bgcolor: 'rgba(0,0,0,0.05)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+    };
+    Plotly.newPlot("caloriePlot", calorieData, calorieLayout);
+
     object.addEventListener("load", populateData);
+
     const populateData = () => {
         var data = []
 
@@ -31,14 +65,8 @@
         return data;
     } 
     
-    var calorieData = populateData();
-    // Define Layout
-    var calorieLayout = {
-        xaxis: { title: "Date" },
-        yaxis: { title: "Calories" },
-        title: "Calorie Graph"
-    };
-    Plotly.newPlot("caloriePlot", calorieData, calorieLayout);
+    calorieData = populateData();
+    
 
 </script>
 {% endblock %}
