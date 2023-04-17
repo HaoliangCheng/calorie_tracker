@@ -1,0 +1,12 @@
+body {
+    background-image: radial-gradient(circle farthest-corner at 92.3% 71.5%, rgba(83, 138, 214, 1) 0%, rgba(134, 231, 214, 1) 90%);
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    padding-top: 50px;
+    font-family: 'Poppins', sans-serif;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+    outline: none;
+    border: none;
+    margin-left: 10%;
+}

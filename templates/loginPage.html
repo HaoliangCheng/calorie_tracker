@@ -2,16 +2,24 @@
 
 {% block head %}
     <title>login page</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='css/login.css')}}">
 {% endblock %}
 
 {% block body %}
+    <div class="background">
+    
+    </div>
 
-    <p>Log In! -  calorie tracker web</p> 
     <form action="" method="post">
-        Username:  <input type="text" name="user_name" /><br/>
-        Password:  <input type="password" name="user_password" /><br/>
-        <input class="Sign" type="submit" value="Sign in" id="Sign"> 
-        <a href="/register" class="register">register</a>
+        <h1> Calorie Tracker</h1>
+        <label for="username">Username</label>
+        <input type="text" name="user_name" /><br/>
+
+        <label for="password">Password</label>
+        <input type="password" name="user_password" /><br/>
+
+        <input class="Sign" type="submit" value="Sign in" id="Sign"></input>
+        Don't have an account? <a href="/register" class="button">Register here</a>
     </form>
 
 {% endblock %}

@@ -2,19 +2,21 @@
 
 {% block head %}
     <title>register page</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='css/register.css')}}">
+
 {% endblock %}
 
 {% block body %}
 <div id="content">
-          <p>Register -  calorie tracker App</p> 
           <form action="" method="post">
+            <h3>Register an account</h3>
             Username: <input type="text" name="user" /><br/>
-            age: <input type="text" name="age" /><br/>
-            gender: <input type="text" name="gender" /><br/>
-            height: <input type="text" name="height" /><br/>
-            weight: <input type="text" name="weight" /><br/>
-            goal_weight: <input type="text" name="goal_weight" /><br/>
-            daily_caloire_goal: <input type="text" name="daily_caloire_goal" /><br/>
+            Age: <input type="text" name="age" /><br/>
+            Gender: <input type="text" name="gender" /><br/>
+            Height: <input type="text" name="height" /><br/>
+            Weight: <input type="text" name="weight" /><br/>
+            Weight goal: <input type="text" name="goal_weight" /><br/>
+            Daily calorie goal: <input type="text" name="daily_caloire_goal" /><br/>
             
             Password: <input type="password" name="Password" /><br/>
             Retype Password: <input type="password" name="RePassword" /><br/>

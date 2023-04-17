@@ -2,26 +2,37 @@
 
 {% block head %}
     <title>Calorie Diary Page</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='css/diary.css')}}">
+
 {% endblock %}
 
 {% block body %}
-    <p>Calorie Records</p>
-    <table>
-        <tr>
-            <th>Date</th>
-            <th>Calories</th>
-        </tr>
-        {% for record in records %}
+<div id="title">
+    <h1>Calorie Tracker</h1>
+</div>
+    <div id="appDiv">
+    <h2>{{username}}'s Calorie Records:</h2>
+
+        <table>
             <tr>
-                <td>{{record.1}}</td>
-                <td>{{record.0}}</td>
+                <th>Date</th>
+                <th>Calories</th>
             </tr>
-        {% endfor %}
-    </table>
-    <a href="#" onclick="goBack()">Go Back</a>
-    <script>
-        function goBack() {
-          window.history.go(-1);
-        }
-    </script>
+            <br>
+            {% for record in records %}
+                <tr>
+                    <td>{{record.1}}</td>
+                    <td>{{record.0}}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        <a href="#" onclick="goBack()">
+            <input type="button" value="Back to Profile" />
+        </a>
+        <script>
+            function goBack() {
+                window.history.go(-1);
+            }
+        </script>
+    </div>
 {% endblock %}
