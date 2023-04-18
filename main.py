@@ -1,5 +1,6 @@
 from flask import Flask, request, redirect, render_template, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import desc
 from datetime import datetime
 import json
 
@@ -139,8 +140,10 @@ def profile(username=None):
 def get_diary_data(username=None, methods=["GET"]):
     user = User.query.filter_by(username=username).first() #get user from the database
     diary_list = db.session.execute(db.select([diary.date]).where(diary.user == username)).scalars().all() #get all the dates when the user has made an entry, username are unique
-    # diary_list.sort(key=lambda date: datetime.strptime(date, "%Y-%m-%d"))
-    diary_list = list(set(diary_list)) #remove duplicates
+    diary_list = [datetime.strptime(date_str, '%Y-%m-%d') for date_str in diary_list]
+    diary_list = list(set(diary_list))
+    diary_list.sort()
+    diary_list = [datetime.strftime(date_obj, '%Y-%m-%d') for date_obj in diary_list]
     calorie_list = [] #list of tuples (calories, date)
     for i in range(len(diary_list)): #for each date
         calorie_entry = db.session.execute(db.select([diary.calorie]).where(diary.date == diary_list[i], diary.user == user.username)).scalars().all() #get all the calories for that date
@@ -237,7 +240,10 @@ def sub_record(username=None):
 def diary_entry(username=None):
     user = User.query.filter_by(username=username).first() #get user from the database
     diary_list = db.session.execute(db.select([diary.date]).where(diary.user == username)).scalars().all() #get all the dates when the user has made an entry, username are unique
-    diary_list = list(set(diary_list)) #remove duplicates
+    diary_list = [datetime.strptime(date_str, '%Y-%m-%d') for date_str in diary_list]
+    diary_list = list(set(diary_list))
+    diary_list.sort(reverse=True)
+    diary_list = [datetime.strftime(date_obj, '%Y-%m-%d') for date_obj in diary_list]
     calorie_list = [] #list of tuples (calories, date)
     for i in range(len(diary_list)): #for each date
         calorie_entry = db.session.execute(db.select([diary.calorie]).where(diary.date == diary_list[i], diary.user == user.username)).scalars().all() #get all the calories for that date
