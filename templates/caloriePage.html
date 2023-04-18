@@ -33,39 +33,68 @@
 <script>
     //inital plot
     var calorieData = [];
-    // Define Layout
     var calorieLayout = {
-        xaxis: { title: "Date", 
-                showgrid: false, 
-                rangemode: 'nonnegative',
-                linecolor: '#FFFFFF',
-                linewidth: 1 },
-        yaxis: { title: "Calories", 
-                showgrid: false, 
-                rangemode: 'nonnegative',
-                linecolor: '#FFFFFF',
-                linewidth: 1  },
+        xaxis: {
+            title: "Date",
+            showgrid: false,
+            rangemode: 'nonnegative',
+            linecolor: '#FFFFFF',
+            linewidth: 1
+        },
+        yaxis: {
+            title: "Calories",
+            showgrid: false,
+            rangemode: 'nonnegative',
+            linecolor: '#FFFFFF',
+            linewidth: 1
+        },
         title: "",
         font: {
             color: 'white',
         },
         paper_bgcolor: 'rgba(0,0,0,0.05)',
-        plot_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)'
+
     };
-    Plotly.newPlot("caloriePlot", calorieData, calorieLayout);
-
-    object.addEventListener("load", populateData);
-
-    const populateData = () => {
-        var data = []
-
-        $.get("/getpythondata", function (data) {
-            console.log($.parseJSON(data))
-        })
-        return data;
+    const populateData = async function() {
+        const url = window.location.href.replace("/profile", "") + "/getdiarydata"
+        console.log(url)
+        const response = await fetch(url);
+        const jsonData = await response.json();
+        calorieData = jsonData;
+        console.log(calorieData);
+        var x = new Array();
+        var y = new Array();
+        for (let i = 0; i < calorieData.length; i+=1) {
+            x[i] = calorieData[i][0];
+            y[i] = calorieData[i][1];
+        }
+        var data = [];
+        let points = {
+            x: x,
+            y: y,
+            mode: 'lines+markers',
+            marker: {
+                color: 'rgb(256, 256, 256)',
+                size: 8
+            },
+            line: {
+                color: 'rgb(256, 256, 256)',
+                width: 4,
+                shape: 'spline'
+            }
+        };
+        data.push(points);
+        console.log(data);
+        Plotly.newPlot("caloriePlot", data, calorieLayout);
     } 
+
+    window.addEventListener("load", populateData);
+    // Define Layout
     
-    calorieData = populateData();
+
+
+    
     
 
 </script>

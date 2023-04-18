@@ -1,9 +1,4 @@
 body {
-    /* background-color: #080710;
-        background-image: url('sky4.jpg');
-        background-size: 150%;
-        background-repeat: no-repeat; */
-        /* background-position-y: 60%; */
     background-image: radial-gradient(circle farthest-corner at 92.3% 71.5%, rgba(83, 138, 214, 1) 0%, rgba(134, 231, 214, 1) 90%);
         background-repeat: no-repeat;
         background-attachment: fixed;
